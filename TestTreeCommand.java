@@ -1,36 +1,39 @@
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
 
 public class TestTreeCommand {
     public static void main(String[] args) {
-        // Chemin du répertoire à afficher
-        String cheminRepertoire = "C:\\Users\\vincent\\Desktop\\DIC1\\Semestre 2\\Design Pattern";
+        if (args.length == 0) {
+            System.out.println("Veuillez spécifier le chemin du dossier dont vous voulez voir l'arborescence.");
+            return;
+        }
 
-        // Création du dossier racine
-        Dossier dossierRacine = new Dossier("Arborescence");
+        String cheminRepertoire = args[0];
+        File dossier = new File(cheminRepertoire);
 
-        // Appel de la méthode pour afficher l'arborescence
-        afficherArborescence(new File(cheminRepertoire), dossierRacine, 0);
+        if (!dossier.exists() || !dossier.isDirectory()) {
+            System.out.println("Le chemin spécifié n'est pas un dossier valide.");
+            return;
+        }
 
-        // Affichage de l'arborescence
-        dossierRacine.afficher();
+        afficherArborescence(dossier, "");
     }
 
-    private static void afficherArborescence(File fichier, Dossier parent, int niveau) {
-        if (fichier.isDirectory()) {
-            Dossier dossier = new Dossier(fichier.getName());
-            parent.ajouterEnfant(dossier);
-
-            File[] fichiers = fichier.listFiles();
-            if (fichiers != null) {
-                for (File f : fichiers) {
-                    afficherArborescence(f, dossier, niveau + 1);
+    private static void afficherArborescence(File dossier, String indentation) {
+        // Récupération des fichiers et sous-dossiers du dossier courant
+        File[] fichiers = dossier.listFiles();
+        if (fichiers != null) {
+            for (int i = 0; i < fichiers.length; i++) {
+                File fichier = fichiers[i];
+                if (fichier.isDirectory()) {
+                    // Affichage du nom du dossier avec indentation
+                    System.out.println(indentation + "|-- " + fichier.getName());
+                    // Appel récursif pour afficher l'arborescence des sous-dossiers
+                    afficherArborescence(fichier, indentation + "    ");
+                } else {
+                    // Affichage du nom du fichier décalé vers la droite
+                    System.out.println(indentation + "    |-- " + fichier.getName());
                 }
             }
-        } else {
-            Fichier fichierFeuille = new Fichier(fichier.getName());
-            parent.ajouterEnfant(fichierFeuille);
         }
     }
 }
